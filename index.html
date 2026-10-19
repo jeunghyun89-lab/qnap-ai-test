@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <title>안정현 QNAP AI</title>
+<meta name="description" content="QNAP 엣지 AI 서버와 AI NAS로 사내 LLM, 문서 검색, 영상 분석을 구축합니다. 담당 안정현.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="안정현 QNAP AI">
+<meta property="og:description" content="QNAP 엣지 AI 서버와 AI NAS로 사내 LLM, 문서 검색, 영상 분석을 구축합니다. 담당 안정현.">
+<meta property="og:url" content="https://jeunghyun89-lab.github.io/qnap-ai-test/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -187,6 +192,19 @@
   .case h3 { font-size: 1.0625rem; font-weight: 700; }
   .case p { color: var(--muted); font-size: 0.9375rem; }
 
+  /* References */
+  .refs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .ref { display: grid; gap: 10px; align-content: start; text-decoration: none; }
+  .ref img {
+    width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  }
+  .ref .label { color: var(--accent); }
+  .ref h3 { font-size: 1.0625rem; font-weight: 700; }
+  .ref p { color: var(--muted); font-size: 0.9375rem; }
+  .ref:hover h3 { color: var(--accent); }
+  .refs-note { margin-top: 28px; color: var(--muted); font-size: var(--s-1); }
+
   /* Process */
   .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: step; }
   .steps li { counter-increment: step; display: grid; gap: 8px; align-content: start; padding-top: 18px; border-top: 2px solid var(--line); }
@@ -229,12 +247,12 @@
     .fact:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
     .fact:nth-child(4) { border-top: 1px solid var(--line); }
     .sec-head, .prod { grid-template-columns: 1fr; gap: 8px; }
-    .cases { grid-template-columns: repeat(2, 1fr); }
+    .cases, .refs { grid-template-columns: repeat(2, 1fr); }
     .steps { grid-template-columns: repeat(2, 1fr); }
     .nav ul { display: none; }
   }
   @media (max-width: 520px) {
-    .cases, .steps { grid-template-columns: 1fr; }
+    .cases, .steps, .refs { grid-template-columns: 1fr; }
     .bays { gap: 5px; }
     .rows li { grid-template-columns: 1fr auto; }
     .rows li .k { grid-column: 1 / -1; }
@@ -255,6 +273,7 @@
     <ul>
       <li><a href="#products">제품</a></li>
       <li><a href="#cases">활용 사례</a></li>
+      <li><a href="#refs">레퍼런스</a></li>
       <li><a href="#process">도입 절차</a></li>
       <li><a href="https://www.qnap.com/ko-kr" target="_blank" rel="noopener">QNAP 공식 ↗</a></li>
     </ul>
@@ -380,7 +399,58 @@
     </div>
   </section>
 
-  <section id="process">
+  <section id="refs">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">References</span>
+        <div>
+          <h2>QNAP 고객 사례</h2>
+          <p>QNAP 공식 사이트에 소개된 해외 도입 사례입니다. 항목을 누르면 원문이 새 탭에서 열립니다.</p>
+        </div>
+      </div>
+      <ul class="refs">
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/customer-stories/ts-h1290fx-relive-studio" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-h1290fx-relive-studio/quote.png" alt="Relive Studio 도입 사례" loading="lazy">
+          <span class="label">TS-h1290FX · 영상 제작</span>
+          <h3>Relive Studio</h3>
+          <p>여러 편집자가 UHD 영상을 동시에 편집하고, 편집부터 백업까지 한 장비에서 안정적으로 처리합니다.</p>
+        </a></li>
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/customer-stories/ts-ai642_shin-suzuki" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-ai642_shin-suzuki/quote.jpg" alt="Shin Suzuki 도입 사례" loading="lazy">
+          <span class="label">TS-AI642 · AI NAS</span>
+          <h3>Shin Suzuki</h3>
+          <p>AI NAS의 AI 기능으로 방대한 데이터베이스에서 필요한 파일을 빠르게 찾습니다.</p>
+        </a></li>
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/customer-stories/ts-1655_down-madrid" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-1655_down-madrid/quote.jpg" alt="Down Madrid 도입 사례" loading="lazy">
+          <span class="label">TS-1655 · QuMagie AI</span>
+          <h3>Down Madrid</h3>
+          <p>AI 기반 사진 관리로 많은 사진 속에서 원하는 사진을 찾는 시간을 줄였습니다.</p>
+        </a></li>
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/customer-stories/ts-873A_tagoju" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-873A_tagoju/quote.jpg" alt="Tagoju 도입 사례" loading="lazy">
+          <span class="label">TS-873A · QVR Pro</span>
+          <h3>Tagoju</h3>
+          <p>약 90대의 보안 카메라 영상을 한곳에서 녹화하고 관리합니다.</p>
+        </a></li>
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/case-studies/ts-2483xu-rp_kugsm" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-2483xu-rp_kugsm/ts-2483xu-rp_kugsm.jpg" alt="교토대학 게놈의학센터 도입 사례" loading="lazy">
+          <span class="label">TS-2483XU-RP · 의료 연구</span>
+          <h3>교토대학 게놈의학센터</h3>
+          <p>대용량 게놈 데이터 분석 속도를 높였습니다.</p>
+        </a></li>
+        <li><a class="ref" href="https://www.qnap.com/ko-kr/case-studies/ts-1685-viscovery" target="_blank" rel="noopener">
+          <img src="https://www.qnap.com/uploads/images/customer-story/ts-1685-viscovery/ts-1685-viscovery.jpg" alt="Viscovery 도입 사례" loading="lazy">
+          <span class="label">TS-1685 · 영상 인식</span>
+          <h3>Viscovery</h3>
+          <p>빅데이터와 영상 인식 분석을 위한 프라이빗 클라우드 데이터베이스로 씁니다.</p>
+        </a></li>
+      </ul>
+      <p class="refs-note">사례 내용과 이미지 출처: QNAP Systems, Inc. 고객 사례 페이지</p>
+    </div>
+  </section>
+
+  <section id="process" class="alt">
     <div class="wrap">
       <div class="sec-head">
         <span class="label">Process</span>
@@ -398,7 +468,7 @@
     </div>
   </section>
 
-  <section id="contact" class="alt">
+  <section id="contact">
     <div class="wrap contact">
       <div>
         <span class="label">Contact</span>
