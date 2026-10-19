@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>김준원 QNAP AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: datasheet-style, left-aligned. Hero pairs the thesis with a 12-bay server front panel; products read as a spec list, not cards. */
+  :root {
+    --bg: #f1f3f5;
+    --surface: #ffffff;
+    --ink: #0f1a24;
+    --muted: #546371;
+    --line: #d4dbe1;
+    --accent: #0a5fd1;
+    --accent-ink: #ffffff;
+    --chassis: #1a222a;
+    --chassis-edge: #2b3640;
+    --bay: #10161c;
+    --led: #2fbf71;
+    --led-idle: #24563c;
+    --header-bg: rgba(241, 243, 245, 0.9);
+
+    --f-display: "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+
+    --s-1: 0.8125rem;
+    --s0: 1rem;
+    --s1: 1.25rem;
+    --s2: 1.75rem;
+    --s3: clamp(2.25rem, 5.5vw, 3.75rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0d1318;
+      --surface: #141c23;
+      --ink: #e5ecf1;
+      --muted: #8e9eab;
+      --line: #26323c;
+      --accent: #4d9bff;
+      --accent-ink: #06121f;
+      --chassis: #1c252d;
+      --chassis-edge: #34414c;
+      --bay: #0a0f13;
+      --header-bg: rgba(13, 19, 24, 0.88);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d1318;
+    --surface: #141c23;
+    --ink: #e5ecf1;
+    --muted: #8e9eab;
+    --line: #26323c;
+    --accent: #4d9bff;
+    --accent-ink: #06121f;
+    --chassis: #1c252d;
+    --chassis-edge: #34414c;
+    --bay: #0a0f13;
+    --header-bg: rgba(13, 19, 24, 0.88);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: var(--s0);
+    line-height: 1.75;
+    word-break: keep-all;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px); z-index: 20; background: var(--header-bg);
+  }
+  a { color: inherit; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+  p { margin: 0; }
+  .wrap {
+    max-width: 1120px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .label {
+    font-family: var(--f-mono); font-size: var(--s-1); letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  /* Header */
+  header {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    background: var(--header-bg); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+  .brand { font-family: var(--f-display); font-weight: 900; text-decoration: none; display: flex; gap: 10px; align-items: baseline; }
+  .brand small { font-family: var(--f-mono); font-weight: 400; font-size: var(--s-1); color: var(--muted); }
+  .nav ul { display: flex; gap: 24px; list-style: none; margin: 0; padding: 0; font-size: 0.9375rem; }
+  .nav ul a { text-decoration: none; color: var(--muted); }
+  .nav ul a:hover { color: var(--ink); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 6px; font-weight: 600; text-decoration: none;
+    background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent);
+    transition: transform .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.line { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn.line:hover { border-color: var(--ink); }
+
+  /* Hero */
+  .hero { padding-block: 72px 80px; border-bottom: 1px solid var(--line); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
+  .hero h1 { font-size: var(--s3); font-weight: 900; line-height: 1.2; margin-top: 18px; }
+  .hero h1 span { color: var(--accent); }
+  .hero .lede { margin-top: 22px; font-size: 1.0625rem; color: var(--muted); max-width: 34em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+  /* Server front panel */
+  .unit { display: grid; gap: 10px; }
+  .chassis {
+    background: var(--chassis); border: 1px solid var(--chassis-edge); border-radius: 10px;
+    padding: 18px; display: grid; gap: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .chassis-top { display: flex; justify-content: space-between; align-items: center; }
+  .chassis-top .model { font-family: var(--f-mono); font-size: var(--s-1); color: #c9d4dc; letter-spacing: 0.06em; }
+  .power { display: flex; gap: 8px; align-items: center; font-family: var(--f-mono); font-size: 0.7rem; color: #8a9aa6; }
+  .power i { width: 8px; height: 8px; border-radius: 50%; background: var(--led); box-shadow: 0 0 8px var(--led); }
+  .bays { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .bay {
+    aspect-ratio: 1 / 2.4; max-width: 100%;
+    background: var(--bay); border: 1px solid var(--chassis-edge); border-radius: 4px;
+    position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 8px 6px;
+  }
+  .bay::after {
+    content: ""; position: absolute; left: 6px; right: 6px; top: 34%; bottom: 22%;
+    background: repeating-linear-gradient(0deg, transparent 0 4px, rgba(255,255,255,.05) 4px 5px);
+  }
+  .bay b { font-family: var(--f-mono); font-weight: 400; font-size: 0.65rem; color: #6f808c; }
+  .bay i { width: 6px; height: 6px; border-radius: 50%; background: var(--led-idle); transition: background .08s, box-shadow .08s; }
+  .bay i.on { background: var(--led); box-shadow: 0 0 6px var(--led); }
+  .unit figcaption { font-size: var(--s-1); color: var(--muted); }
+
+  /* Facts strip */
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+  .fact { padding-block: 26px; padding-right: 20px; display: grid; gap: 4px; }
+  .fact + .fact { border-left: 1px solid var(--line); padding-left: 20px; }
+  .fact b { font-family: var(--f-display); font-size: var(--s1); }
+  .fact span { color: var(--muted); font-size: 0.9375rem; }
+
+  /* Sections */
+  section { padding-block: 88px; }
+  .sec-head { display: grid; grid-template-columns: 220px 1fr; gap: 32px; margin-bottom: 40px; align-items: baseline; }
+  .sec-head h2 { font-size: var(--s2); font-weight: 900; }
+  .sec-head p { color: var(--muted); margin-top: 8px; max-width: 40em; }
+
+  /* Product spec list */
+  .products { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .products li { border-bottom: 1px solid var(--line); }
+  .prod {
+    display: grid; grid-template-columns: 220px 1fr auto; gap: 32px; align-items: start;
+    padding-block: 26px; text-decoration: none; transition: background .15s;
+  }
+  .prod:hover { background: var(--surface); }
+  .prod:hover .go { color: var(--accent); transform: translateX(4px); }
+  .prod .code { font-family: var(--f-mono); font-size: var(--s-1); color: var(--accent); letter-spacing: 0.06em; padding-top: 4px; }
+  .prod h3 { font-size: var(--s1); font-weight: 700; }
+  .prod p { color: var(--muted); margin-top: 6px; max-width: 42em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .chips span { font-size: var(--s-1); padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+  .go { font-family: var(--f-mono); font-size: var(--s-1); color: var(--muted); white-space: nowrap; padding-top: 4px; transition: transform .15s, color .15s; }
+
+  /* Use cases */
+  .alt { background: var(--surface); border-block: 1px solid var(--line); }
+  .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .case { padding: 24px 24px 28px 0; border-bottom: 1px solid var(--line); display: grid; gap: 6px; align-content: start; }
+  .case h3 { font-size: 1.0625rem; font-weight: 700; }
+  .case p { color: var(--muted); font-size: 0.9375rem; }
+
+  /* Process */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: step; }
+  .steps li { counter-increment: step; display: grid; gap: 8px; align-content: start; padding-top: 18px; border-top: 2px solid var(--line); }
+  .steps li:first-child { border-top-color: var(--accent); }
+  .steps li::before { content: "STEP " counter(step); font-family: var(--f-mono); font-size: var(--s-1); color: var(--accent); letter-spacing: 0.08em; }
+  .steps h3 { font-size: 1.0625rem; font-weight: 700; }
+  .steps p { color: var(--muted); font-size: 0.9375rem; }
+
+  /* Contact */
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .contact h2 { font-size: var(--s2); font-weight: 900; }
+  .contact .lede { color: var(--muted); margin-top: 12px; max-width: 30em; }
+  .person { display: flex; gap: 16px; align-items: center; margin-top: 28px; }
+  .mono-badge {
+    width: 56px; height: 56px; border-radius: 8px; display: grid; place-items: center;
+    background: var(--chassis); color: #e5ecf1; font-family: var(--f-display); font-weight: 900; font-size: 1.25rem;
+  }
+  .person b { font-family: var(--f-display); font-size: var(--s1); display: block; line-height: 1.3; }
+  .person span { color: var(--muted); font-size: 0.9375rem; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 24px;
+  }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { display: grid; grid-template-columns: 96px 1fr auto; gap: 16px; align-items: center; padding-block: 18px; }
+  .rows li + li { border-top: 1px solid var(--line); }
+  .rows .v { font-family: var(--f-mono); font-size: 1.0625rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .rows a { font-size: var(--s-1); color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .rows a:hover { text-decoration: underline; }
+  .copy {
+    font: inherit; font-size: var(--s-1); color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer;
+  }
+  .copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  footer { padding-block: 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--s-1); }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+  @media (max-width: 880px) {
+    .hero-grid, .contact { grid-template-columns: 1fr; gap: 40px; }
+    .facts { grid-template-columns: repeat(2, 1fr); }
+    .fact:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
+    .fact:nth-child(4) { border-top: 1px solid var(--line); }
+    .sec-head, .prod { grid-template-columns: 1fr; gap: 8px; }
+    .cases { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .nav ul { display: none; }
+  }
+  @media (max-width: 520px) {
+    .cases, .steps { grid-template-columns: 1fr; }
+    .bays { gap: 5px; }
+    .rows li { grid-template-columns: 1fr auto; }
+    .rows li .k { grid-column: 1 / -1; }
+    .hero { padding-block: 48px 56px; }
+    section { padding-block: 64px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn, .go, .bay i { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand">김준원 <small>QNAP AI</small></a>
+    <ul>
+      <li><a href="#products">제품</a></li>
+      <li><a href="#cases">활용 사례</a></li>
+      <li><a href="#process">도입 절차</a></li>
+      <li><a href="https://www.qnap.com/ko-kr" target="_blank" rel="noopener">QNAP 공식 ↗</a></li>
+    </ul>
+    <a href="#contact" class="btn">상담 문의</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="label">On-premise AI · 온프레미스 AI 인프라</span>
+        <h1>회사 데이터는 밖으로,<br>내보내지 않습니다.<br><span>AI는 사내에서 돌립니다.</span></h1>
+        <p class="lede">QNAP 엣지 AI 서버와 AI NAS로 사내 LLM, 문서 검색(RAG), 영상 분석을 구축합니다. 장비 선정부터 설치와 운영까지 김준원이 직접 맡습니다.</p>
+        <div class="actions">
+          <a href="#products" class="btn">제품 보기</a>
+          <a href="https://www.qnap.com/ko-kr/solution/edge-ai-storage-sever" target="_blank" rel="noopener" class="btn line">QNAP 엣지 AI 공식 페이지 ↗</a>
+        </div>
+      </div>
+
+      <figure class="unit" style="margin:0">
+        <div class="chassis" aria-hidden="true">
+          <div class="chassis-top">
+            <span class="model">QAI-h1290FX</span>
+            <span class="power"><i></i>PWR</span>
+          </div>
+          <div class="bays" id="bays"></div>
+        </div>
+        <figcaption>12베이 U.2 NVMe 올플래시 엣지 AI 스토리지 서버. 표시등은 디스크 입출력을 나타낸 그림입니다.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="wrap facts">
+    <div class="fact"><b>데이터 주권</b><span>클라우드로 보내지 않는 로컬 AI</span></div>
+    <div class="fact"><b>GPU 가속</b><span>GPU 장착으로 추론 성능 확장</span></div>
+    <div class="fact"><b>저장과 연산 통합</b><span>AI 서버와 스토리지를 한 대로</span></div>
+    <div class="fact"><b>전담 지원</b><span>도입 후 운영까지 1:1</span></div>
+  </div>
+
+  <section id="products">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Products</span>
+        <div>
+          <h2>QNAP AI 제품</h2>
+          <p>항목을 누르면 QNAP 공식 사이트의 해당 페이지가 새 탭에서 열립니다.</p>
+        </div>
+      </div>
+      <ul class="products">
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/solution/edge-ai-storage-sever" target="_blank" rel="noopener">
+          <span class="code">EDGE AI SERVER</span>
+          <div>
+            <h3>엣지 AI 스토리지 서버</h3>
+            <p>고성능 CPU와 GPU, 올플래시 스토리지를 한 대에 담은 사내 AI 플랫폼입니다. 로컬 LLM 추론과 가상머신, 컨테이너를 함께 운영합니다.</p>
+            <div class="chips"><span>로컬 LLM</span><span>VM · 컨테이너</span><span>QuTS hero ZFS</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/solution/optimize-ai-with-qnap-storage" target="_blank" rel="noopener">
+          <span class="code">AI STORAGE</span>
+          <div>
+            <h3>AI 학습 · RAG용 스토리지</h3>
+            <p>AI 학습 데이터와 벡터 DB를 빠르게 읽고 쓰는 스토리지 구성입니다. 기존 NAS에 GPU를 더해 AI 서버로 확장할 수도 있습니다.</p>
+            <div class="chips"><span>GPU 확장</span><span>10/25GbE</span><span>중소기업 규모</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/solution/rag-ai-search/" target="_blank" rel="noopener">
+          <span class="code">RAG SEARCH</span>
+          <div>
+            <h3>Qsirch AI 문서 검색</h3>
+            <p>NAS에 저장된 사내 문서를 자연어로 묻고 찾습니다. 답과 함께 근거가 된 문서를 보여줍니다.</p>
+            <div class="chips"><span>PDF · 오피스 문서</span><span>근거 문서 제시</span><span>권한별 접근</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/solution/qvr-surveillance" target="_blank" rel="noopener">
+          <span class="code">VIDEO AI</span>
+          <div>
+            <h3>QVR AI 영상 분석</h3>
+            <p>CCTV 영상에서 얼굴, 사람, 차량을 인식합니다. 출입 관리와 방문객 집계, 이벤트 검색에 씁니다.</p>
+            <div class="chips"><span>얼굴 인식</span><span>사람 · 차량 카운팅</span><span>이벤트 알림</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/software/qumagie" target="_blank" rel="noopener">
+          <span class="code">PHOTO AI</span>
+          <div>
+            <h3>QuMagie AI 사진 관리</h3>
+            <p>인물, 사물, 장소별로 사진을 자동 분류합니다. 마케팅팀과 디자인팀의 이미지 자산 관리에 맞습니다.</p>
+            <div class="chips"><span>자동 태깅</span><span>스마트 앨범</span><span>모바일 앱</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+        <li><a class="prod" href="https://www.qnap.com/ko-kr/software/hybrid-backup-sync" target="_blank" rel="noopener">
+          <span class="code">BACKUP</span>
+          <div>
+            <h3>AI 데이터 보호 · 백업</h3>
+            <p>학습 데이터와 결과물을 스냅샷과 백업으로 지킵니다. 원격지 이중화로 장애에 대비합니다.</p>
+            <div class="chips"><span>불변 스냅샷</span><span>HBS 3</span><span>원격 이중화</span></div>
+          </div>
+          <span class="go">공식 페이지 →</span>
+        </a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="cases" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Use cases</span>
+        <div><h2>이런 곳에 도입합니다</h2></div>
+      </div>
+      <div class="cases">
+        <div class="case"><h3>일반 기업</h3><p>사내 규정과 매뉴얼로 답하는 업무용 AI 챗봇.</p></div>
+        <div class="case"><h3>병원 · 의료</h3><p>환자 데이터를 외부로 반출하지 않고 분석하고 검색.</p></div>
+        <div class="case"><h3>제조 · 공장</h3><p>비전 검사 영상 저장과 엣지 AI 분석을 한 장비로.</p></div>
+        <div class="case"><h3>연구소 · 대학</h3><p>모델 학습 데이터 관리와 GPU 실험 환경.</p></div>
+        <div class="case"><h3>법무 · 회계</h3><p>계약서와 판례를 자연어로 찾는 RAG 검색.</p></div>
+        <div class="case"><h3>유통 · 매장</h3><p>방문객 분석과 매장 보안을 AI 영상으로 자동화.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Process</span>
+        <div>
+          <h2>도입 절차</h2>
+          <p>처음 도입하는 회사도 단계별로 안내합니다.</p>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><h3>상담</h3><p>업무 환경과 AI로 하려는 일을 함께 정리합니다.</p></li>
+        <li><h3>설계</h3><p>데이터 규모와 사용자 수에 맞춰 장비와 구성을 제안합니다.</p></li>
+        <li><h3>구축</h3><p>장비를 설치하고 AI 모델과 소프트웨어를 세팅합니다.</p></li>
+        <li><h3>교육 · 운영</h3><p>사용자 교육 후 유지보수를 계속 지원합니다.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="contact" class="alt">
+    <div class="wrap contact">
+      <div>
+        <span class="label">Contact</span>
+        <h2 style="margin-top:12px">AI 도입 상담</h2>
+        <p class="lede">회사 환경에 맞는 QNAP AI 구성을 제안해 드립니다. 상담은 무료입니다.</p>
+        <div class="person">
+          <div class="mono-badge">김</div>
+          <div><b>김준원</b><span>QNAP AI 솔루션 담당 · Ross Kim</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <ul class="rows">
+          <li><span class="label k">전화</span><span class="v">010-6614-4141</span><a href="tel:01066144141">전화 걸기</a></li>
+          <li><span class="label k">이메일</span><span class="v">rosskim@qnap.com</span><button class="copy" type="button" id="copyEmail" data-copy="rosskim@qnap.com">주소 복사</button></li>
+          <li><span class="label k">상담 시간</span><span class="v">평일 09:00–18:00</span><span></span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 김준원 · QNAP AI 솔루션</span>
+    <span>QNAP은 QNAP Systems, Inc.의 상표입니다.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var bays = document.getElementById('bays');
+    var leds = [];
+    for (var n = 1; n <= 12; n++) {
+      var bay = document.createElement('div');
+      bay.className = 'bay';
+      var led = document.createElement('i');
+      if (n % 3 !== 0) led.className = 'on';
+      var num = document.createElement('b');
+      num.textContent = String(n).padStart(2, '0');
+      bay.appendChild(led);
+      bay.appendChild(num);
+      bays.appendChild(bay);
+      leds.push(led);
+    }
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!still) {
+      setInterval(function () {
+        leds.forEach(function (l) { l.classList.toggle('on', Math.random() > 0.45); });
+      }, 140);
+    }
+
+    var btn = document.getElementById('copyEmail');
+    btn.addEventListener('click', function () {
+      var done = function () { btn.textContent = '복사됨'; setTimeout(function () { btn.textContent = '주소 복사'; }, 1600); };
+      try {
+        navigator.clipboard.writeText(btn.dataset.copy).then(done, function () { btn.textContent = '직접 복사해 주세요'; });
+      } catch (e) { btn.textContent = '직접 복사해 주세요'; }
+    });
+  })();
+</script>
+</body>
+</html>
